@@ -37,7 +37,10 @@ init_by_lua '
     "nginx_http_connections", "Number of HTTP connections", {"state"})
 ';
 log_by_lua '
-  local host = ngx.var.host:gsub("^www.", "")
+  local host = ngx.var.server_name:gsub("^www.", "")
+  if host == "" then
+    host = "NONE"
+  end
   metric_requests:inc(1, {host, ngx.var.status})
   metric_latency:observe(tonumber(ngx.var.request_time), {host})
 ';
